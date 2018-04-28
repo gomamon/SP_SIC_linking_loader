@@ -8,16 +8,16 @@
    |  Author  : Ye-eun Lee                                        |
    +--------------------------------------------------------------+
    */
-#include "main.h"
-#include "20161622.h"
-#include "assembler.h"
-#include "linkLoader.h"
+
 #include <stdio.h>
 #include <string.h>
 #include <dirent.h>
 #include <sys/stat.h>
 #include <stdlib.h>
-
+#include "main.h"
+#include "20161622.h"
+#include "assembler.h"
+#include "linkLoader.h"
 
 //enum about valid command
 enum COMMAND_TYPE {
@@ -78,6 +78,7 @@ hash_table hash[20];
 
 int main(){
 	pc_addr=0,base_addr=0;
+	prog_addr = 0;
 	int mode;		//execute mode
 
 	MemInit();			//Initialize memory array

@@ -11,5 +11,4 @@ linkLoader.o: linkLoader.c main.h linkLoader.h assembler.h
 clean: 
 	-rm *.o
 	-rm *.lst
-	-rm *.obj
 	-rm 20161622.out

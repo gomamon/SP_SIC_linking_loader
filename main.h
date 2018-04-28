@@ -84,16 +84,19 @@ struct Reg{
 typedef struct ESTNode{
 	char extsym[10];
 	int addr;
-	struct ESTnode *next;
+	struct ESTNode *next;
 } est_node;
 
 //external symbol table  
 struct {
 	char ctrl_sec[10];
-	est_node next;
+	int len;
+	int addr;
+	est_node *next;
+	est_node *rear;
 }estab[4];
 
-
+int prog_addr;
 
 
 
