@@ -169,8 +169,38 @@ void PrintEST(){
 	printf("-------------------------------------------------------\n");
 	printf("\t\t\t\t\ttotal length %4X\n",prog_len);
 }
+int GetRefRec(char str[], int cnt){
+	int i;
+	char addr[MAX_LINESIZE];
+
+	
+
+}
 
 int GetTextRec(char str[], int cnt){
+	int i;
+	char addr_str[7];
+	char data[3];
+	int addr,len;
+
+	strncpy(addr_str, &(str[1]), 6);	//get 6 char to save external sym
+	addr = strtol(addr_str,NULL,16);
+	addr += estab[cnt].addr;
+	
+	strncpy(data, &(str[7]), 2);
+	len = strtol(data, NULL ,16);
+
+	for(i=0; i<len; i++){
+		strncpy(data,&str[9+(i*2)],2);
+		strcpy(mem[addr+i],data);
+	}
+}
+
+int GetModiRec(char str[], int cnt){
+	
+
 
 
 }
+
+

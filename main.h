@@ -82,14 +82,14 @@ struct Reg{
 
 //node to save external symbol name and address for ESTAB(estab)
 typedef struct ESTNode{
-	char extsym[10];
+	char extsym[7];
 	int addr;
 	struct ESTNode *next;
 } est_node;
 
 //external symbol table  
 struct {
-	char ctrl_sec[10];
+	char ctrl_sec[7];
 	int len;
 	int addr;
 	est_node *next;
@@ -97,6 +97,7 @@ struct {
 }estab[4];
 
 int prog_addr;
+int prog_len;
 
-
+char mem[ MAX_MEMORY ][3];//memory to save data
 

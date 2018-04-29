@@ -16,4 +16,6 @@ void PrintEST();
 int GetDefineRec(char str[], int cnt);
 
 int LoaderPass2(char obj_file[][COMMANDSIZE]);
+int GetRefRec(char str[], int cnt);
 int GetTextRec(char str[], int cnt);
+int GetModiRec(char str[], int cnt);

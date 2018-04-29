@@ -40,7 +40,6 @@ enum COMMAND_TYPE {
 	BP
 };
 
-char mem[ MAX_MEMORY ][3];				//memory to save data
 char par[MAX_PARAMETER][COMMANDSIZE];	//parameter from input
 char command[ COMMANDSIZE ];			//command to save in history node
 int last_addr=-1;						//save the last address in dump
