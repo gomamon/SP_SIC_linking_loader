@@ -6,6 +6,10 @@
 #include "assembler.h"
 #include "linkLoader.h"
 
+struct REFERNum{
+	int num;
+	char refer_sym[7];
+}reftab[100];
 
 int CheckObj(char filename[]){
     int namesize;
@@ -132,6 +136,8 @@ int GetDefineRec(char str[], int cnt){
 		MakeExtSymNode(sym, addr, cnt);
 	}
 }
+
+
 int MakeExtSymNode(char sym[],int addr,int cnt){
 	est_node *new_node;
 	
@@ -175,6 +181,7 @@ void PrintEST(){
 	printf("\t\t\t\t\ttotal length %4X\n",prog_len);
 }
 
+
 void InitRefTab(){
 	int i;
 	for(i=0; i<100; i++){
@@ -182,6 +189,8 @@ void InitRefTab(){
 		memset(reftab[i].refer_sym, '\0',7);
 	}
 }
+
+
 
 int GetRefRec(char str[], int cnt){
 	int i,j,n;
@@ -209,7 +218,7 @@ int GetRefRec(char str[], int cnt){
 
 		strcpy(reftab[n].refer_sym, sym);
 
-		(estab[cnt].ref_cnt)++;
+		(estab[cnt].ref_cnt)=n;
 	}
 	return 0;
 }
@@ -222,6 +231,7 @@ int GetTextRec(char str[], int cnt){
 	char data[3];
 	int addr,len;
 
+	//printf("ttt");
 	strncpy(addr_str, &(str[1]), 6);//get 6 char to save external sym
 	addr_str[6]='\0';
 	addr = strtol(addr_str,NULL,16);
@@ -233,7 +243,7 @@ int GetTextRec(char str[], int cnt){
 	len = strtol(data, NULL ,16);
 
 	for(i=0; i<len; i++){
-		strncpy(data,&str[9+(i*2)],2);
+		strncpy(data,&(str[9+(i*2)]),2);
 		data[2] = '\0';
 		strcpy(mem[addr+i],data);
 	}
@@ -267,13 +277,17 @@ int GetModiRec(char str[], int cnt){
 
 
 	//string token to get address, half bit and reference symbol number 
-	strncpy(addr_str, &(str[1]), 6);	//get 6 char to save external sym
+	strncpy(addr_str, &(str[1]), 6);//get 6 char to save external sym
+	addr_str[6] = '\0';
 	strncpy(halbit_str, &(str[7]), 2);	//get 2 char to save modifi sym
+	halbit_str[2] = '\0';
 	strncpy(ref_num_str, &(str[9]), 3);
-	
+	ref_num_str[3] = '\0';
+
 	addr = strtol(addr_str, NULL, 16);
 	halbit = strtol(halbit_str, NULL, 16);
 	ref_num = strtol(&(ref_num_str[1]), NULL, 16);
+
 	//get reference external address
 	if(ref_num == 1)	refer_addr = estab[cnt].addr; 
 	else{	
@@ -283,21 +297,24 @@ int GetModiRec(char str[], int cnt){
 			return -1;
 		}
 	}
-	printf("<%X>",addr);
-	
-	//init mod_str
+	printf("<%X>[refaddr:%d]",addr,refer_addr);
+	addr += estab[cnt].addr;
 	memset(mod_str,'\0',7);
+
 	if(ref_num > estab[cnt].ref_cnt){
 		printf("modified error\n");
 		return -1;
 	}
+
 	else if(halbit%2 == 1){
-		mod_str[0] = mem[addr][1];
-		strcpy(&(mod_str[1]),mem[addr+1]);
-		strcpy(&(mod_str[3]),mem[addr+2]);
+		mod_str[0] = mem[addr][1];		
+		mod_str[1] = mem[addr+1][0];	mod_str[2] = mem[addr+1][1];
+		mod_str[3] = mem[addr+2][0];	mod_str[4] = mem[addr+2][1];
+		mod_str[5] = '\0';
+
+		printf("mod_str:%s",mod_str);//Debug	
 		
 		mod = strtol(mod_str, NULL , 16); 
-		mod += estab[cnt].addr;
 
 		if(ref_num_str[0] == '-') refer_addr *= (-1);
 		mod += refer_addr;
@@ -309,12 +326,14 @@ int GetModiRec(char str[], int cnt){
 	}
 
 	else{
-		strcpy(&(mod_str[0]),mem[addr]);
-		strcpy(&(mod_str[2]),mem[addr+1]);
-		strcpy(&(mod_str[4]),mem[addr+2]);
+		mod_str[0] = mem[addr][0];	mod_str[1] = mem[addr][1];
+		mod_str[2] = mem[addr+1][0];	mod_str[3] = mem[addr+1][1];
+		mod_str[4] = mem[addr+2][0];	mod_str[5] = mem[addr+2][1];
+		mod_str[6] = '\0';
+
+		printf("mod_str:%s",mod_str);//Debug	
 		
 		mod = strtol(mod_str, NULL ,16);
-		mod += estab[cnt].addr;
 
 		if(ref_num_str[0] == '-') refer_addr *= (-1);
 		mod += refer_addr;
@@ -355,4 +374,3 @@ char* DecToHex(int dec,int size){
 	}
 	return hex;
 }
-
