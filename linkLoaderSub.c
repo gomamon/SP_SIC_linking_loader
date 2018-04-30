@@ -124,10 +124,9 @@ int GetDefineRec(char str[], int cnt){
 		strncpy(str_addr, &(str[i+6]), 6);			//get 6 char to save address
 		addr = strtol(str_addr,NULL,16);
 		addr += estab[cnt].addr;	//change char(hex) to dec value and store 
-		
-		MakeExtSymNode(sym, addr, cnt);	
-	}
 
+		MakeExtSymNode(sym, addr, cnt);
+	}
 }
 int MakeExtSymNode(char sym[],int addr,int cnt){
 	est_node *new_node;
@@ -143,6 +142,8 @@ int MakeExtSymNode(char sym[],int addr,int cnt){
 	if(estab[cnt].next==NULL) estab[cnt].next = new_node;	
 	else	(estab[cnt].rear)->next = new_node;
 	estab[cnt].rear = new_node;
+
+	return 0;
 }
 
 void PrintEST(){
@@ -170,10 +171,28 @@ void PrintEST(){
 	printf("\t\t\t\t\ttotal length %4X\n",prog_len);
 }
 int GetRefRec(char str[], int cnt){
-	int i;
-	char addr[MAX_LINESIZE];
-
+	int i,j;
+	char sym[7];
+	char num[2];
 	
+	estab[cnt].ref_num = (ref_node*)malloc( (strlen(str)/8 + 2) * sizeof(ref_node) );
+
+	for(i=1; i<strlen(str); i+=8){
+		strncpy(num, &(str[i]), 2);	//get 6 char to save external sym
+		strncpy(sym, &(str[i+2]), 6);	//get 6 char to save external sym
+		
+		//match format
+		for(j=0; j<6; j++){
+			if(!( isalnum(sym[i]) || isalpha(sym[i]) ) ){
+				sym[i] = '\0';
+				break;
+			}
+		}
+
+		estab[cnt].ref_num[strtol(num,NULL,16)].num = strtol(num,NULL,16);
+		strcpy(estab[cnt].ref_num[strtol(num,NULL,16)].refer_sym , sym);
+	}
+	return 0;
 
 }
 
@@ -194,13 +213,76 @@ int GetTextRec(char str[], int cnt){
 		strncpy(data,&str[9+(i*2)],2);
 		strcpy(mem[addr+i],data);
 	}
+	return 0;
+}
+
+int FindExtSymAddr(char str[]){
+	int addr;
+	int i;
+	est_node *np;
+
+	for(i=0; i<3 ; i++){
+		np = estab[i].next;
+		while(1){
+			if(np==NULL) break;
+			if(!strcmp(np->extsym,str))
+				return np->addr;
+			np = np->next;
+		}
+	}
+	return -1;
 }
 
 int GetModiRec(char str[], int cnt){
-	
+	char addr_str[7];//modification address
+	char mod_str[7]; //alternate address to modified
+	char halbit_str[4];//number of half bits modified
+	char ref_num[4]; //referecne symbol number
+	int addr, mod, halbit, num, refer_addr;
+	int i;
+	for(i=1; i<strlen(str); i+=11){
+		strncpy(addr_str, &(str[i]), 6);	//get 6 char to save external sym
+		strncpy(halbit_str, &(str[i+6]), 2);	//get 2 char to save modifi sym
+		strncpy(ref_num, &(str[i+8]), 3);
 
+		addr = strtol(addr_str, NULL, 16);
+		halbit = strtol(halbit_str, NULL, 16);
+		num = strtol(&(ref_num[1]), NULL, 16);
+		
+		memset(mod_str,'\0',7);
+		if(halbit%2 == 1){
+			refer_addr = FindExtSymAddr(estab[cnt].ref_num[num].refer_sym);
+			if(refer_addr == -1) return -1;
+			if(ref_num[0] == '-') refer_addr *= (-1);
+			mem[refer_addr][1] = mod_str[0];
+			strcpy(&(mod_str[1]),mem[refer_addr+1]);
+			strcpy(&(mod_str[3]), mem[refer_addr+2]);
+		}
+		else{
+		
 
+		}
+
+	}
 
 }
 
+char* DecToHex(int dec,int size){
+	//function to chage decimal int value to hexadecimal string
+	char *hex= (char*)malloc(sizeof(char) * size);
+	int i=0,j;
+	memset(hex,'\0',8);
+	for(i=0; i<size; i++){
+		//shift right
+		if(i!=0){
+			for(j=i-1; j<0;j--){
+				hex[j+1] = hex[j];
+			}
+		}
+		hex[0] = (dec%16>='0' && dec%16<='9' ) ? dec%16+'0' : dec%16+'A' ;
+		i++;
+		dec/=16;
+	}
+	return hex;
+}
 
