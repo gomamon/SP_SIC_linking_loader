@@ -297,7 +297,6 @@ int GetModiRec(char str[], int cnt){
 			return -1;
 		}
 	}
-	printf("<%X>[refaddr:%d]",addr,refer_addr);
 	addr += estab[cnt].addr;
 	memset(mod_str,'\0',7);
 
@@ -312,7 +311,6 @@ int GetModiRec(char str[], int cnt){
 		mod_str[3] = mem[addr+2][0];	mod_str[4] = mem[addr+2][1];
 		mod_str[5] = '\0';
 
-		printf("mod_str:%s",mod_str);//Debug	
 		
 		mod = strtol(mod_str, NULL , 16); 
 
@@ -331,7 +329,6 @@ int GetModiRec(char str[], int cnt){
 		mod_str[4] = mem[addr+2][0];	mod_str[5] = mem[addr+2][1];
 		mod_str[6] = '\0';
 
-		printf("mod_str:%s",mod_str);//Debug	
 		
 		mod = strtol(mod_str, NULL ,16);
 
@@ -346,7 +343,6 @@ int GetModiRec(char str[], int cnt){
 		//strncpy(mem[addr+1], &(after_mod[2]), 2);
 		//strncpy(mem[addr+2], &(after_mod[4]), 2);
 	}
-	printf("after_mode: %s\n",after_mod);
 
 	if(after_mod!=NULL)
 		free(after_mod);
