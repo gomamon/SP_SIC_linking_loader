@@ -86,12 +86,17 @@ typedef struct ESTNode{
 	int addr;
 	struct ESTNode *next;
 } est_node;
-
+struct REFERNum{
+	int num;
+	char refer_sym[7];
+}reftab[100];
 //external symbol table  
 struct {
 	char ctrl_sec[7];
-	int len;
-	int addr;
+	int len;	//length
+	int addr;	//start address
+	int ref_cnt; //number of reference
+
 	est_node *next;
 	est_node *rear;
 }estab[4];

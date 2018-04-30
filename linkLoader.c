@@ -70,6 +70,7 @@ int LoaderPass2(char obj_file[][COMMANDSIZE] ){
 	FILE *fp;
 
 	for(i=0 ; i<3 ;i++){
+		InitRefTab();
 		if((estab[i].ctrl_sec)[0] =='\0') break;
 		fp = fopen(obj_file[i],"r");
 
@@ -77,13 +78,16 @@ int LoaderPass2(char obj_file[][COMMANDSIZE] ){
 			str[strlen(str)-1] = '\0';
 			switch(str[0]){
 				case 'R':
-					GetRefRec(str,i);
+					if(GetRefRec(str,i)==-1)
+						return -1;
 					break;
 				case 'T'://external definition
-					GetTextRec(str, i);
+					if(GetTextRec(str, i) == -1)
+						return -1;
 					break;
 				case 'M':
-					GetModiRec(str, i);
+					if(GetModiRec(str, i) == -1)
+						return -1;
 					break;
 				case 'E'://end break;
 					endflag=1;
