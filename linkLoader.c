@@ -6,27 +6,32 @@
 #include "linkLoader.h"
 
 
-
+/******************* program addr *****************************/
 int ProgAddr(char addr[][COMMANDSIZE]){
+	//function to change program start address
 	prog_addr = HexToDec(addr[0]);
 	return 0;
 }
-
+/************************* Run *******************************/
 int Run(){
-
+	
 	return 0;
 }
 
+
+/************************ Break Point ***********************/
 int BreakPoint(char par[][COMMANDSIZE]){
 
 	return 0;
 }
 
+
+
+/*********************** Loader *****************************/
 int LoaderPass1(char obj_file[][COMMANDSIZE]){
 	int i, endflag=0;
 	FILE *obj_p;
 	char str[MAX_LINESIZE];
-	char in;
 	InitEST();
 
 	for(i=0; i<3; i++){
@@ -43,7 +48,7 @@ int LoaderPass1(char obj_file[][COMMANDSIZE]){
 				case 'D'://external definition
 					GetDefineRec(str, i);
 					break;
-				case 'E'://end break;
+				case 'E'://end
 					endflag=1;
 					break;
 				default :
@@ -70,26 +75,31 @@ int LoaderPass2(char obj_file[][COMMANDSIZE] ){
 	FILE *fp;
 
 	for(i=0 ; i<3 ;i++){
+
+		//initialize and check file name
 		InitRefTab();
 		if((estab[i].ctrl_sec)[0] =='\0') break;
 		fp = fopen(obj_file[i],"r");
-
+		
+		//read 1 line string from .obj file
 		while(fgets(str,MAX_LINESIZE,fp)){
 			str[strlen(str)-1] = '\0';
+
+			//record
 			switch(str[0]){
-				case 'R':
+				case 'R':	//external referance
 					if(GetRefRec(str,i)==-1)
 						return -1;
 					break;
-				case 'T'://external definition
+				case 'T':	//external definition
 					if(GetTextRec(str, i) == -1)
 						return -1;
 					break;
-				case 'M':
+				case 'M':	//modify
 					if(GetModiRec(str, i) == -1)
 						return -1;
 					break;
-				case 'E'://end break;
+				case 'E':	//end 
 					endflag=1;
 					break;
 				default :
@@ -103,4 +113,5 @@ int LoaderPass2(char obj_file[][COMMANDSIZE] ){
 		}
 		fclose(fp);	
 	}
+	return 0;
 }

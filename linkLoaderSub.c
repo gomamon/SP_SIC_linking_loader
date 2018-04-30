@@ -6,12 +6,25 @@
 #include "assembler.h"
 #include "linkLoader.h"
 
+//struct to save reference symbol and number
 struct REFERNum{
 	int num;
 	char refer_sym[7];
 }reftab[100];
 
+/************************** Run ************************/
+
+
+
+
+
+
+
+/************************** Loader *********************/
 int CheckObj(char filename[]){
+	//This function checks that file is vaild obj file.
+	//If vaild, return 0. If not, return -1
+	
     int namesize;
 	FILE *obj_p;
 	namesize = strlen(filename);
@@ -28,13 +41,19 @@ int CheckObj(char filename[]){
 	return 0;
 }
 void InitEST(){
+	// initailize external sybol table
+	
 	int i;
 	est_node* del,*bef;
 
 	for(i=0 ; i<4; i++){
+
+		//initiailze data
 		memset(estab[i].ctrl_sec,'\0',7);
 		estab[i].len = 0;
 		estab[i].addr = 0;
+
+		//free linked node and initialize pointer
 		if(estab[i].next == NULL){
 			estab[i].rear = NULL;
 			continue;
@@ -49,14 +68,16 @@ void InitEST(){
 	}
 }
 int GetHeaderRec(FILE *fp,int cnt){
+	//Get Head reacord data(control section, start address, length)
+	
 	int i;
 	char in; // get input from .obj file
 	char str[7]; // get intput string
 	
 	fscanf(fp,"%c",&in);
-	if(in != 'H') return -1;
+	if(in != 'H') return -1;	//check 'H'record
 
-
+	//get control section name
 	for(i=0;i<6;i++) fscanf(fp,"%c",&(estab[cnt].ctrl_sec[i]));	
 
 	//match format
@@ -93,10 +114,13 @@ int GetHeaderRec(FILE *fp,int cnt){
 		estab[cnt].len += strtol(str,NULL,16);
 	}
 	fscanf(fp,"%c",&in);
-
+	return 0;
 }
 
 int GetDefineRec(char str[], int cnt){
+	//Process definition record data 
+	//and fill external symbol table
+	
 	est_node *np;
 	int i,j;
 	int addr;
@@ -135,6 +159,7 @@ int GetDefineRec(char str[], int cnt){
 
 		MakeExtSymNode(sym, addr, cnt);
 	}
+	return 0;
 }
 
 
@@ -251,7 +276,8 @@ int GetTextRec(char str[], int cnt){
 }
 
 int FindExtSymAddr(char str[]){
-	int addr;
+	//Find external Symbol and return that address
+	//If that symbol is not exist, return -1
 	int i;
 	est_node *np;
 
@@ -346,7 +372,7 @@ int GetModiRec(char str[], int cnt){
 
 	if(after_mod!=NULL)
 		free(after_mod);
-
+	return 0;
 }
 
 char* DecToHex(int dec,int size){
