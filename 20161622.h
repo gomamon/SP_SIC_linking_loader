@@ -1,13 +1,4 @@
-/*
-   +--------------------------------------------------------------+
-   |                 System Programming Project 2                 |
-   |                    ( SIC/XE Assembler )                      |
-   |                                                              |
-   |  File    : 20161622.c                                        |
-   |  Created : Mar 18 ~ Apr 9, 2018                              |
-   |  Author  : Ye-eun Lee                                        |
-   +--------------------------------------------------------------+
- */
+
 
 
 /* Function to execute Command */

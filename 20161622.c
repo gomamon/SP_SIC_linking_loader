@@ -1,7 +1,7 @@
 /*
    +--------------------------------------------------------------+
-   |                 System Programming Project 2                 |
-   |                    ( SIC/XE Assembler )                      |
+   |                 System Programming Project 3                 |
+   |                    (   Linking Loader )                      |
    |                                                              |
    |  File    : 20161622.c                                        |
    |  Created : Mar 18 ~ Apr 9, 2018                              |

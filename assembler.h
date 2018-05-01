@@ -1,14 +1,3 @@
-/*
-   +--------------------------------------------------------------+
-   |                 System Programming Project 2                 |
-   |                    ( SIC/XE Assembler )                      |
-   |                                                              |
-   |  File    : assembler.h                                       |
-   |  Created : Mar 18 ~ Apr 9, 2018                              |
-   |  Author  : Ye-eun Lee                                        |
-   +--------------------------------------------------------------+
- */
-
 /*initialization*/
 void InitSymbolTable();
 void InitAssemNode();

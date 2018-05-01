@@ -1,13 +1,4 @@
-/*
-   +--------------------------------------------------------------+
-   |                 System Programming Project 2                 |
-   |                    ( SIC/XE Assembler )                      |
-   |                                                              |
-   |  File    : assembler.c                                       |
-   |  Created : Mar 18 ~ Apr 9, 2018                              |
-   |  Author  : Ye-eun Lee                                        |
-   +--------------------------------------------------------------+
- */
+
 #include "main.h"
 #include "assembler.h"
 #include <stdio.h>
