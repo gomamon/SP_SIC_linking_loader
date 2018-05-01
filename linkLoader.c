@@ -5,9 +5,12 @@
 #include "assembler.h"
 #include "linkLoader.h"
 
+//enum to mark register
 enum REGISTER{
 	A=0, X=1, L=2, B=3, S=4, T=5, F=6, PC=8, SW=9
 };
+
+//run flag
 int run_start = -1;
 
 /******************* program addr *****************************/
@@ -21,15 +24,17 @@ int ProgAddr(char addr[][COMMANDSIZE]){
 
 /************************ Break Point ***********************/
 int BreakPoint(char par[][COMMANDSIZE]){
+	//Make, print, remove break point
+	
 	if(par[0][0] == '\0'){ 
-		PrintBP();
+		PrintBP();//print all break point
 	}
 	else if(!strcmp(par[0],"clear")){
-		InitBP();
+		InitBP();//delete all break point
 		printf("\t[ok] clear all breakpoints\n");
 	}
 	else{
-		MakeBP(strtol(par[0],NULL,16));
+		MakeBP(strtol(par[0],NULL,16));	//make break point
 		printf("\t[ok] create breakpoints %04X\n",(unsigned)strtol(par[0],NULL,16));
 	}
 	return 0;

@@ -16,6 +16,7 @@ enum REGSTER{
 };
 /************************** Break Point  ************************/
 void PrintBP(){
+	//print break point
 	bp *np;
 	printf("\tbreakpoint\n");
 	printf("\t-----------\n");
@@ -25,6 +26,7 @@ void PrintBP(){
 }
 
 void InitBP(){
+	//initial break point
 	bp *np,*dp;
 	np = bphead;
 
@@ -39,12 +41,15 @@ void InitBP(){
 }
 
 void MakeBP(int addr){
+	//make break point and link each nodes
 	bp *newbp;
 	
+	//initial breakpoint nodes
 	newbp = (bp*)malloc(sizeof(bp));
 	newbp->next = NULL;
 	newbp->addr = addr;
 	
+	//link nodes
 	if(bphead==NULL) bphead = newbp;
 	else bprear->next = newbp;
 	bprear = newbp;
@@ -213,6 +218,7 @@ int MakeExtSymNode(char sym[],int addr,int cnt){
 }
 
 void PrintEST(){
+	//Print external symbol table
 	int i;
 	est_node *np;
 	prog_len=0;
@@ -239,6 +245,7 @@ void PrintEST(){
 
 
 void InitRefTab(){
+	//initialization reference table
 	int i;
 	for(i=0; i<100; i++){
 		reftab[i].num = 0;
@@ -249,26 +256,31 @@ void InitRefTab(){
 
 
 int GetRefRec(char str[], int cnt){
+	//Get reference record and save data in reftab
 	int i,j,n;
 	char sym[7];
 	char num[2];
 
+	//initialization
 	estab[cnt].ref_cnt = 1;
 
 	memset(sym,'\0',7);
 	memset(num,'\0',2);
+
+	//read reference record
 	for(i=1; i<strlen(str); i+=8){
 		strncpy(num, &str[i], 2);
 		num[2] = '\0';
 		strncpy(sym, &str[i+2], 6);
 		sym[6] = '\0';
-
+		//match format
 		for(j=0; j<7; j++){
 			if(isalnum(sym[j]) && isalpha(sym[j]))
 				continue;
 			sym[j] = '\0';
 			break;
 		}
+
 		n = strtol(num, NULL, 16);
 		reftab[n].num = n;
 
@@ -325,6 +337,8 @@ int FindExtSymAddr(char str[]){
 }
 
 int GetModiRec(char str[], int cnt){
+	//Read modification record and modify memory
+
 	char addr_str[7];//modification address
 	char mod_str[7]; //data to be modified
 	char halbit_str[4];//number of half bits modified
@@ -357,48 +371,53 @@ int GetModiRec(char str[], int cnt){
 	addr += estab[cnt].addr;
 	memset(mod_str,'\0',7);
 
+	//reference number error
 	if(ref_num > estab[cnt].ref_cnt){
 		printf("modified error\n");
 		return -1;
 	}
 
+	//half bit is 5
 	else if(halbit%2 == 1){
+		//get data from memory
 		mod_str[0] = mem[addr][1];		
 		mod_str[1] = mem[addr+1][0];	mod_str[2] = mem[addr+1][1];
 		mod_str[3] = mem[addr+2][0];	mod_str[4] = mem[addr+2][1];
 		mod_str[5] = '\0';
 
-		
+		//modify
 		mod = strtol(mod_str, NULL , 16); 
 
 		if(ref_num_str[0] == '-') refer_addr *= (-1);
 		mod += refer_addr;
 		
+		//store modified data
 		after_mod = DecToHex(mod, halbit);
 		mem[addr][1] = after_mod[0];
 		mem[addr+1][0] = after_mod[1]; mem[addr+1][1] = after_mod[2];
 		mem[addr+2][0] = after_mod[3]; mem[addr+2][1] = after_mod[4];
 	}
-
+	//half bit is 6
 	else{
+		//get data from memory
 		mod_str[0] = mem[addr][0];	mod_str[1] = mem[addr][1];
 		mod_str[2] = mem[addr+1][0];	mod_str[3] = mem[addr+1][1];
 		mod_str[4] = mem[addr+2][0];	mod_str[5] = mem[addr+2][1];
 		mod_str[6] = '\0';
 
-		
+		//modify
 		mod = strtol(mod_str, NULL ,16);
 
 		if(ref_num_str[0] == '-') refer_addr *= (-1);
 		mod += refer_addr;
 
+		//store modified data
 		after_mod = DecToHex(mod, halbit);
 			
 		mem[addr][0] = after_mod[0]; mem[addr][1] = after_mod[1];
 		mem[addr+1][0] = after_mod[2]; mem[addr+1][1] = after_mod[3];
 		mem[addr+2][0] = after_mod[4]; mem[addr+2][1] = after_mod[5];
-		//strncpy(mem[addr+1], &(after_mod[2]), 2);
-		//strncpy(mem[addr+2], &(after_mod[4]), 2);
+		
 	}
 
 	if(after_mod!=NULL)
@@ -410,11 +429,13 @@ char* DecToHex(int dec,int size){
 	//function to chage decimal int value to hexadecimal string
 	char *hex= (char*)malloc(sizeof(char) * size + 1);
 	int i=0,j;
-	int max = 1;		
+	int max = 1;
+
+	//process big number
 	for(i=0; i<=size; i++) max *= 16;
 		dec %= max;
 	memset(hex,'\0',size+1);
-	if (dec<0)
+	if (dec<0)	//process negative num
 		dec= max + dec;
 
 	for(i=0; i<size; i++){
