@@ -69,30 +69,18 @@ typedef struct AssemNode{
 
 int pc_addr,base_addr;
 
-//register
-struct Reg{
-	int a;
-	int x;
-	int l;
-	int pc;
-	int b;
-	int s;
-	int t;
-}reg;
+
 
 //node to save external symbol name and address for ESTAB(estab)
 typedef struct ESTNode{
-	char extsym[7];
-	int addr;
+	char extsym[7];	//external symbol name
+	int addr;		//external symbol address
 	struct ESTNode *next;
 } est_node;
-struct REFERNum{
-	int num;
-	char refer_sym[7];
-}reftab[100];
+
 //external symbol table  
 struct {
-	char ctrl_sec[7];
+	char ctrl_sec[7];	//control section name
 	int len;	//length
 	int addr;	//start address
 	int ref_cnt; //number of reference
@@ -101,8 +89,17 @@ struct {
 	est_node *rear;
 }estab[4];
 
-int prog_addr;
-int prog_len;
+int prog_addr;//program starting address
+int prog_len;//program memory length
 
 char mem[ MAX_MEMORY ][3];//memory to save data
+//node to save register
+typedef struct _BP{
+	int addr;
+	struct _BP *next;
+}bp;
 
+int reg[10];
+bp* bphead;
+bp* bprear;
+int flagC;

@@ -80,6 +80,7 @@ int main(){
 	prog_addr = 0;
 	int mode;		//execute mode
 
+	InitBP();
 	MemInit();			//Initialize memory array
 	MakeHashTable();	//Make hash table
 
@@ -90,8 +91,7 @@ int main(){
 		printf("sicsim> ");
 		mode = Input();
 		// execute the command according to mode
-		if(mode!=-1 && mode!=ASSEMBLE)	AddHistory();	// If input is valid, add command to history 
-		printf("%d\n",mode);
+		if(mode!=-1 && mode!=ASSEMBLE && mode!=LOADER)	AddHistory();	// If input is valid, add command to history 
 		switch(mode){
 			case -1:	// If input is invalid, get input again
 				continue;
@@ -144,10 +144,14 @@ int main(){
 				ProgAddr(par);
 				break;
 			case LOADER:
-				LoaderPass1(par);
+				if(LoaderPass1(par) != -1)
+					AddHistory();
+				break;
+			case BP:
+				BreakPoint(par);
 				break;
 			case RUN:
-				BreakPoint(par);
+				Run();
 				break;
 		}
 	}
@@ -425,7 +429,7 @@ int CheckParameter(int cmd_num){
 			if(par[0][0] == '\0')
 				return BP;
 			else if(par[1][0]=='\0'){
-				if(IsHex(par[0]))
+				if(IsHex(par[0])||!strcmp(par[0],"clear"))
 					return BP;
 				else{
 					printf("Wrong format of program address\n");
@@ -578,7 +582,11 @@ void Help(){
 			"assemble filename\n"
 			"type filename\n"
 			"symbol\n"
-		  );
+			"progaddr [address]\n"
+			"loader [object filename1] [object filename2] [...]\n"
+			"run\n"
+			"bp[address]\n"
+		);
 }
 
 /***************** Dir *****************/

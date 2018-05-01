@@ -11,13 +11,44 @@ struct REFERNum{
 	int num;
 	char refer_sym[7];
 }reftab[100];
+enum REGSTER{
+	A=0, X=1, L=2, B=3, S=4, T=5, F=6, PC=8, SW=9
+};
+/************************** Break Point  ************************/
+void PrintBP(){
+	bp *np;
+	printf("\tbreakpoint\n");
+	printf("\t-----------\n");
+	for(np=bphead ; np!=NULL; np=np->next){
+		printf("\t%04X\n",np->addr);
+	}
+}
 
-/************************** Run ************************/
+void InitBP(){
+	bp *np,*dp;
+	np = bphead;
 
+	while(1){
+		if(np == NULL) break;
+		dp = np;
+		np = np->next;
+		free(dp);
+	}
+	bphead = NULL;
+	bprear = NULL;
+}
 
-
-
-
+void MakeBP(int addr){
+	bp *newbp;
+	
+	newbp = (bp*)malloc(sizeof(bp));
+	newbp->next = NULL;
+	newbp->addr = addr;
+	
+	if(bphead==NULL) bphead = newbp;
+	else bprear->next = newbp;
+	bprear = newbp;
+}
 
 
 /************************** Loader *********************/
@@ -203,7 +234,7 @@ void PrintEST(){
 	}
 
 	printf("-------------------------------------------------------\n");
-	printf("\t\t\t\t\ttotal length %4X\n",prog_len);
+	printf("\t\t\t\t\ttotal length %04X\n",prog_len);
 }
 
 
@@ -396,3 +427,122 @@ char* DecToHex(int dec,int size){
 	}
 	return hex;
 }
+/************************** Run ************************/
+int SearchBP(int addr,int form){
+	//search break point
+	//If find break point, then return the address
+	//If no break point at address, then return 0
+	bp* np;
+	for(np=bphead ; np!=NULL; np=np->next){
+		if(np->addr>=addr && np->addr<=addr+form){
+			return np->addr;
+		}
+	}
+		
+	return -1;
+}
+void PrintReg(){
+	//print all register
+	printf("\tA : %012X X : %08X\n",reg[A], reg[X]);
+	printf("\tL : %012X PC: %012X\n",reg[L], reg[PC]);
+	printf("\tB : %012X S : %012X\n",reg[B], reg[S]);
+	printf("\tT : %012X\n",reg[T]);
+	
+}
+
+int ExcuteInst(int addr, int form){
+	
+	//excute instruction by format
+	unsigned int data=0;
+	int opcode;
+	int r1, r2;
+
+	switch(form){
+		case 1:	
+			//get data in format 1
+			data = strtol(mem[addr],NULL,16);
+			opcode = data;
+			switch(opcode){
+				case FIX:
+					reg[A] = reg[F];
+					break;
+				case FLOAT:
+					reg[F] = reg[A];
+					break;
+				case HIO:
+				case SIO:
+				case TIO:
+					break;
+			}
+			return 1;
+			break;
+		case 2:
+			//format 2
+			data = strtol(mem[addr],NULL,16)*0x100;
+			data += strtol(mem[addr+1],NULL,16);
+			opcode = data & 0xFF00;
+			r1 = data & 0x00F0;
+			r2 = data & 0x000F;
+			switch(opcode){
+				case ADDR:
+					reg[r2] =reg[r2] + reg[r1]; 
+					break;
+				case CLEAR:
+					reg[r1] = 0;
+					break;
+				case COMPR:
+					flagC = (reg[r1] == reg[r2]) ? 1 : 0;
+					break;
+				case DIVR:
+					reg[r2] = reg[r2] / reg[r1];
+					break;
+				case MULR:
+					reg[r2] = reg[r2] * reg[r1];
+					break;
+				case RMO:
+					reg[r2] = reg[r1];
+					break;
+				case SHIFTL:
+					reg[r1] = (reg[r1]*2) % 0x100000;
+					break;
+				case SUBR:
+					reg[r2] = reg[r2] - reg[r1];
+					break;
+				case SVC:
+					break;
+				case TIXR:
+					reg[1] = reg[1] + 1;
+					flagC = (reg[1] == reg[r1]) ? 1 : 0;
+					break;
+				default:
+					return -1;
+			}
+			return 2;
+			break;
+			/*
+		case 3:
+			data = strtol(mem[addr],NULL,16)*0x10000;
+			data += strtol(mem[addr+1],NULL,16)*0x100;
+			data += strtol(mem[addr+2],NULL,16);
+			opcode = data & 0xFC0000;
+			x = data & 0x008000;
+
+			break;
+		case 4:			
+			data = strtol(mem[addr],NULL, 16)*0x1000;
+			data += strtol(mem[addr+1],NULL,16)*0x100;
+			data += strtol(mem[addr+2],NULL,16)*0x10;
+			data += strtol(mem[addr+3],NULL,16);
+			opcode = data & 0xFC000000;
+			x = data & 0x00800000;
+			
+			break;*/
+		default:
+			break;
+	}
+	return 1;
+}
+
+
+
+
